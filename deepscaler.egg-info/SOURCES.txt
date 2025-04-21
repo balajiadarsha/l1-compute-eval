@@ -1,0 +1,11 @@
+README.md
+setup.py
+deepscaler/__init__.py
+deepscaler/globals.py
+deepscaler/system_prompts.py
+deepscaler/utils.py
+deepscaler.egg-info/PKG-INFO
+deepscaler.egg-info/SOURCES.txt
+deepscaler.egg-info/dependency_links.txt
+deepscaler.egg-info/requires.txt
+deepscaler.egg-info/top_level.txt

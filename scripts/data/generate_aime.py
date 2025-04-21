@@ -37,10 +37,10 @@ for num_tokens in [512, 1024, 2048, 3600, -512, -1024, -2048, -3600, -1]:
                     }
                 })
     if num_tokens == -1:
-        pd.DataFrame(all_data).to_parquet(f'~/deepscaler/data/aime2025.parquet')
+        pd.DataFrame(all_data).to_parquet(f'/lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data/aime2025.parquet')
     else:
         if num_tokens < 0:
-            pd.DataFrame(all_data).to_parquet(f'~/deepscaler/data9_{num_tokens}/aime2025.parquet')
+            pd.DataFrame(all_data).to_parquet(f'/lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data9_{num_tokens}/aime2025.parquet')
         else:
-            pd.DataFrame(all_data).to_parquet(f'~/deepscaler/data_{num_tokens}/aime2025.parquet')
+            pd.DataFrame(all_data).to_parquet(f'/lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data_{num_tokens}/aime2025.parquet')
     

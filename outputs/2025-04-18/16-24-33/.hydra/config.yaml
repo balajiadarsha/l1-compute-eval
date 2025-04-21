@@ -1,0 +1,54 @@
+trainer:
+  nnodes: 1
+  n_gpus_per_node: 1
+data:
+  path: /lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data_1024/mmlu_1000.parquet
+  prompt_key: prompt
+  response_key: responses
+  data_source_key: data_source
+  reward_model_key: reward_model
+  n_samples: 16
+  output_path: /lus/eagle/projects/argonne_tpc/abalaji/datasets_1024/mmlu_1000.parquet
+  batch_size: 2048
+model:
+  path: l3lab/L1-Qwen-1.5B-Exact
+  external_lib: null
+rollout:
+  name: vllm
+  temperature: 0.6
+  top_k: -1
+  top_p: 0.95
+  prompt_length: 1536
+  response_length: 2048
+  dtype: bfloat16
+  gpu_memory_utilization: 0.9
+  ignore_eos: false
+  micro_batch_size: 256
+  enforce_eager: true
+  free_cache_engine: true
+  load_format: dummy_dtensor
+  tensor_model_parallel_size: 1
+  max_num_batched_tokens: 8192
+  max_num_seqs: 1024
+  log_prob_micro_batch_size: 8
+  do_sample: true
+  'n': 1
+  n_val: 1
+  enable_chunked_prefill: true
+  ignore_think_token: false
+actor:
+  strategy: fsdp
+  ulysses_sequence_parallel_size: 1
+  fsdp_config:
+    wrap_policy:
+      min_num_params: 0
+    param_offload: false
+    grad_offload: false
+    optimizer_offload: false
+    fsdp_size: -1
+  optim:
+    lr: 1.0e-06
+    lr_warmup_steps_ratio: 0.0
+    min_lr_ratio: null
+    warmup_style: constant
+    total_training_steps: -1

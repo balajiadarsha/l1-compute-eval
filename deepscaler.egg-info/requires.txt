@@ -1,0 +1,6 @@
+google-cloud-aiplatform
+latex2sympy2
+pylatexenc
+sentence_transformers
+tabulate
+flash_attn==2.7.3

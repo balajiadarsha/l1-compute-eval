@@ -21,7 +21,7 @@ import hydra
 import os
 from tabulate import tabulate
 
-os.environ['NCCL_DEBUG'] = 'WARN'
+os.environ['NCCL_INFO'] = 'DEBUG'
 os.environ['TOKENIZERS_PARALLELISM'] = 'true'
 # os.environ['TORCH_COMPILE_DISABLE'] = '1'
 

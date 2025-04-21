@@ -48,8 +48,8 @@ for num_tokens in [512, 1024, 2048, 3600, -512, -1024, -2048, -3600, -1]:
                         'index': i
                     }
                 })
-    if num_tokens < -1:
-        pd.DataFrame(all_data).to_parquet(f'~/deepscaler/data9_{num_tokens}/gpqa.parquet')
+    if num_tokens < 0:
+        pd.DataFrame(all_data).to_parquet(f'/lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data9_{num_tokens}/gpqa.parquet')
     else:
-        pd.DataFrame(all_data).to_parquet(f'~/deepscaler/data_{num_tokens}/gpqa.parquet')
+        pd.DataFrame(all_data).to_parquet(f'/lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data_{num_tokens}/gpqa.parquet')
     

@@ -6,9 +6,10 @@ export VLLM_ATTENTION_BACKEND=XFORMERS
 MODEL_PATH="$HOME/DeepScaleR-1.5B-Preview"
 NUM_TOKENS=512  # Add default NUM_TOKENS
 MAX_TOKENS=$((NUM_TOKENS * 2))  # Set MAX_TOKENS to twice NUM_TOKENS
-DATATYPES=("gpqa" "mmlu_1000" "lsat" "aime2025" "math" "amc" "aime" "olympiad_bench")
+#DATATYPES=("gpqa" "mmlu_1000" "lsat" "aime2025" "math" "amc" "aime" "olympiad_bench")
+DATATYPES=("mmlu_1000" "lsat" "aime2025" "gpqa")
 
-OUTPUT_DIR="$HOME"  # Add default output directory
+OUTPUT_DIR=/lus/eagle/projects/argonne_tpc/abalaji/datasets  # Add default output directory
 
 
 # Parse named arguments
@@ -57,8 +58,8 @@ echo "Max Tokens: ${MAX_TOKENS}"
 for DATA_TYPE in "${DATATYPES[@]}"; do
     python3 -m verl.trainer.main_generation \
         trainer.nnodes=1 \
-        trainer.n_gpus_per_node=8 \
-        data.path=$HOME/deepscaler/data_${NUM_TOKENS}/${DATA_TYPE}.parquet \
+        trainer.n_gpus_per_node=1 \
+        data.path=/lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data_${NUM_TOKENS}/${DATA_TYPE}.parquet \
         data.output_path=${OUTPUT_DIR}_${NUM_TOKENS}/${DATA_TYPE}.parquet \
         data.n_samples=16 \
         data.batch_size=2048 \
