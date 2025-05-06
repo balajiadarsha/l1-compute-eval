@@ -8,11 +8,10 @@ MODEL_PATH="$HOME/DeepScaleR-1.5B-Preview"
 # Possible values: aime, amc, math, minerva, olympiad_bench
 # DATATYPES=("aime" "math" "amc" "minerva" "olympiad_bench")
 # DATATYPES=("aime" "math" "amc" "minerva" "olympiad_bench" "gpqa" "lsat" "mmlu_1000")
-DATATYPES=("apps")
+DATATYPES=("strongreject")
 
 
-# DATATYPES=("math")
-OUTPUT_DIR="$HOME"  # Add default output directory
+OUTPUT_DIR=/lus/eagle/projects/argonne_tpc/abalaji/output/response  # Add default output directory
 
 # Parse named arguments
 while [[ $# -gt 0 ]]; do
@@ -51,8 +50,8 @@ echo "Output Directory: ${OUTPUT_DIR}"
 for DATA_TYPE in "${DATATYPES[@]}"; do
     python3 -m verl.trainer.main_generation \
         trainer.nnodes=1 \
-        trainer.n_gpus_per_node=8 \
-        data.path=$HOME/deepscaler/data/${DATA_TYPE}.parquet \
+        trainer.n_gpus_per_node=1 \
+        data.path=/lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data/${DATA_TYPE}.parquet \
         data.output_path=${OUTPUT_DIR}/${DATA_TYPE}.parquet \
         data.n_samples=16 \
         data.batch_size=2048 \

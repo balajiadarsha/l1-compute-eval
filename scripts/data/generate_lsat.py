@@ -10,6 +10,10 @@ for num_tokens in [512, 1024, 2048, 3600, -512, -1024, -2048, -3600, -1]:
 
         question = ds_lsat['test'][i]['query']
         correct_choice = chr(65 + ds_lsat['test'][i]['gold'][0])
+        print(question)
+        print(correct_choice)
+        if i==5:
+            exit()
         if num_tokens < -1:
             question = f"{question}"+"\n\nLet's think step by step and output the final answer (eg, A, B, C, D) within \\boxed{}." + (f" Think for maximum {num_tokens} tokens.")
         else:

@@ -18,7 +18,9 @@ for num_tokens in [512, 1024, 2048, 3600, -512, -1024, -2048, -3600, -1]:
         else:
             question = f"{question}"+"\n\nLet's think step by step and output the final answer within \\boxed{}." + (f" Think for maximum {abs(num_tokens)} tokens.")
 
+        print(question)
 
+        exit()
         all_data.append({
                     "data_source": "aime2025",
                     "prompt": [{

@@ -7,9 +7,9 @@ MODEL_PATH="$HOME/DeepScaleR-1.5B-Preview"
 NUM_TOKENS=512  # Add default NUM_TOKENS
 MAX_TOKENS=$((NUM_TOKENS * 2))  # Set MAX_TOKENS to twice NUM_TOKENS
 #DATATYPES=("gpqa" "mmlu_1000" "lsat" "aime2025" "math" "amc" "aime" "olympiad_bench")
-DATATYPES=("mmlu_1000" "lsat" "aime2025" "gpqa")
+DATATYPES=("mmlu_1000" "lsat" "aime2025" "gpqa" "strongreject")
 
-OUTPUT_DIR=/lus/eagle/projects/argonne_tpc/abalaji/datasets  # Add default output directory
+OUTPUT_DIR=/lus/eagle/projects/argonne_tpc/abalaji/output/response  # Add default output directory
 
 
 # Parse named arguments
