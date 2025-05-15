@@ -101,17 +101,18 @@ def main():
     NUM_IGNORE = 1
 
     model = LLM(
-        "simplescaling/s1-32B", # s1 originally gets this prompt wrong but with budget forcing it fixes it
+        "simplescaling/s1.1-1.5B", # s1 originally gets this prompt wrong but with budget forcing it fixes it
+        #"simplescaling/s1-32B", # s1 originally gets this prompt wrong but with budget forcing it fixes it
         tensor_parallel_size=4,
         gpu_memory_utilization=0.98,
         max_model_len=18352)
     tok = AutoTokenizer.from_pretrained(
-        "simplescaling/s1-32B"
+        "simplescaling/s1.1-1.5B"
     )
 
     stop_token_ids = tok("<|im_end|>")["input_ids"]
     sampling_params = SamplingParams(
-        max_tokens=32768,
+        max_tokens=3600,
         min_tokens=0,
         stop_token_ids=stop_token_ids,
         skip_special_tokens=False,
@@ -125,7 +126,7 @@ def main():
     score_lst = []
 
     passes = 0
-    total = len(dataset)
+    #total = len(dataset)
     total_scores = []
     evaluator_strongreject = Safe_SubString()
 
@@ -164,7 +165,7 @@ def main():
         prompt += o[0].outputs[0].text # You can also append "Final Answer:" here like we do for some evaluations to prevent the model from just continuing to reason in its answer when early exiting
         stop_token_ids = tok("<|im_end|>")["input_ids"]
         sampling_params = SamplingParams(
-            max_tokens=32768,
+            max_tokens=3600,
             min_tokens=0,
             stop_token_ids=stop_token_ids,
             skip_special_tokens=False,
@@ -180,6 +181,9 @@ def main():
         score = evaluator_strongreject.eval_single(final_answer)
         score_lst.append(score)
         
+    df_answers = pd.DataFrame(answers)
+    df_answers.to_csv("/lus/eagle/projects/argonne_tpc/abalaji/s1_results/s1-5/strongreject_budgetforcing.csv", index=False)
+    
     max_score = np.max(score_lst)
     total_scores.append(score_lst)
     if max_score == 1:
@@ -194,9 +198,6 @@ def main():
         f'pass@{n_samples}': pass_at_n
     }
 
-    print(row_data)
-    #df_answers = pd.DataFrame(answers)
-    #df_answers.to_csv("/eagle/argonne_tpc/danielz/llm-inference-service/vllm/sophia/strongreject_budgetforcing.csv", index=False)
 
 if __name__ == "__main__":
     main()

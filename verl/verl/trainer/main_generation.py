@@ -105,8 +105,7 @@ class Safe_SubString:
         if response is None:
             return True
         
-        for s in response:
-            print(s)
+       
         refusal_state = [s in response  for s in self.refusal_string]
         return not any(refusal_state)
 
@@ -116,7 +115,8 @@ def main(config):
     from omegaconf import OmegaConf
     pprint(OmegaConf.to_container(config, resolve=True))  # resolve=True will eval symbol values
     OmegaConf.resolve(config)
-
+    
+    print(config.rollout.prompt_length)
     # Check if output file already exists
     if os.path.exists(config.data.output_path):
         print(f"Output file {config.data.output_path} already exists. Skipping generation and proceeding to evaluation.")
@@ -124,6 +124,8 @@ def main(config):
     else:
         local_path = copy_local_path_from_hdfs(config.model.path)
         from verl.utils import hf_tokenizer
+
+        # hf_tokenizer
         tokenizer = hf_tokenizer(local_path)
 
         if config.rollout.temperature == 0.:
@@ -131,6 +133,7 @@ def main(config):
 
         # read dataset. Note that the dataset should directly contain chat template format (e.g., a list of dictionary)
         dataset = pd.read_parquet(config.data.path)
+        
         chat_lst = dataset[config.data.prompt_key].tolist()
 
         chat_lst = [chat.tolist() for chat in chat_lst]
@@ -139,6 +142,7 @@ def main(config):
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
 
+        print(config)
         ray_cls_with_init = RayClassWithInitArgs(cls=ray.remote(ActorRolloutRefWorker), config=config, role='rollout')
         resource_pool = RayResourcePool(process_on_nodes=[config.trainer.n_gpus_per_node] * config.trainer.nnodes)
         wg = RayWorkerGroup(resource_pool=resource_pool, ray_cls_with_init=ray_cls_with_init)
@@ -150,7 +154,7 @@ def main(config):
         dp_size = wg.world_size // config.rollout.tensor_model_parallel_size
         num_batch = (total_samples // config_batch_size) + 1
         output_lst = []  # We'll reshape at the end
-        print('Reached Here')
+        
         for batch_idx in range(num_batch):
             print(f'[{batch_idx+1}/{num_batch}] Start to process.')
             batch_chat_lst = chat_lst[batch_idx * config_batch_size:(batch_idx + 1) * config_batch_size]
@@ -192,7 +196,6 @@ def main(config):
             print(f'[{batch_idx+1}/{num_batch}] Start to generate.')
             
             # Generate all samples at once
-            print(len(data.batch['input_ids']))
             output = wg.generate_sequences(data)
             # Remove dummy data
             output = output[:real_batch_size]
@@ -216,7 +219,6 @@ def main(config):
         # Add to the data frame
         dataset['responses'] = output_lst
         dataset['token_lengths'] = token_lengths
-        print(output_lst)
 
         print('Correlation between token length and num_tokens:')
         try:
@@ -229,6 +231,7 @@ def main(config):
         # Write to a new parquet
         output_dir = os.path.dirname(config.data.output_path)
         makedirs(output_dir, exist_ok=True)
+        print(config.data.output_path)
         dataset.to_parquet(config.data.output_path)
     
     output_dir = os.path.dirname(config.data.output_path)
@@ -242,10 +245,10 @@ def main(config):
     total = len(dataset)
     total_scores = []
     evaluator_strongreject = Safe_SubString()
+    answers=[]
 
     for i in range(total):
         response_lst = responses[i]
-        print(response_lst)
         data_source = data_sources[i]
         prompt = prompts[i]
         reward_data = reward_model_data[i]
@@ -256,7 +259,6 @@ def main(config):
             for r in response_lst:
                 score = evaluator_strongreject.eval_single(r)
                 score_lst.append(score)
-            print(score_lst)
         else:
             for r in response_lst:
                 if config.rollout.ignore_think_token:
@@ -264,10 +266,11 @@ def main(config):
                 else:
                     score = reward_fn(r, ground_truth)
                 score_lst.append(score)
-            print(score_lst)
         
         max_score = np.max(score_lst)
         total_scores.append(score_lst)
+        question = prompt
+
         if max_score == 1:
             passes += 1
 

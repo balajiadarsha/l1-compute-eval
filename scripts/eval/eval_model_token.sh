@@ -60,7 +60,7 @@ for DATA_TYPE in "${DATATYPES[@]}"; do
         trainer.nnodes=1 \
         trainer.n_gpus_per_node=1 \
         data.path=/lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data_${NUM_TOKENS}/${DATA_TYPE}.parquet \
-        data.output_path=${OUTPUT_DIR}_${NUM_TOKENS}/${DATA_TYPE}.parquet \
+        data.output_path=${OUTPUT_DIR}_${NUM_TOKENS}/${DATA_TYPE}\
         data.n_samples=16 \
         data.batch_size=2048 \
         model.path=${MODEL_PATH} \
