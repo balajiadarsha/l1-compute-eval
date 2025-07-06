@@ -19,6 +19,7 @@ class TrainDataset(enum.Enum):
     NUMINA_OLYMPIAD = 'OLYMPIAD'  # Unique Olympiad problems from NUMINA
     MATH = 'MATH'  # Dan Hendrycks Math Problems
     STILL = 'STILL'  # STILL dataset
+    SAFECHAIN = 'SAFECHAIN'
     DEEPSCALER = 'DEEPSCALER'  # DeepScaler (AIME, AMC, OMNI_MATH, MATH, STILL)
 
 
@@ -31,6 +32,7 @@ class TestDataset(enum.Enum):
     AMC = 'AMC'    # American Mathematics Competition  
     MATH = 'MATH'  # Math 500 problems
     MINERVA = 'MINERVA'  # Minerva dataset
+    SAFECHAIN = 'SAFECHAIN'
     OLYMPIAD_BENCH = 'OLYMPIAD_BENCH'  # Olympiad benchmark problems
 
 """Type alias for either training or testing dataset types."""

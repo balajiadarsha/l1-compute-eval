@@ -16,6 +16,7 @@ import sys
 sys.path.append('../../deepscaler')
 from deepscaler.data.utils import load_dataset
 from deepscaler.data.dataset_types import TrainDataset, TestDataset
+from datasets import load_dataset
 
 import random
 import copy
@@ -45,6 +46,7 @@ def make_map_fn(split: str):
     """
     
     def process_fn(example: Dict[str, Any], idx: int) -> Optional[Dict[str, Any]]:
+        print(example)
         question = example.pop('problem')
         # Choose a random number between 100 and 4000
         # Choose a floating number between 7 and 16
@@ -76,7 +78,7 @@ def make_map_fn(split: str):
                 if random_number < 0:
                     instruction = f"{instruction} Think for maximum {abs(random_number)} tokens."
                 else:
-                    instruction = f"{instruction} Think for {random_number} tokens."
+                    i nstruction = f"{instruction} Think for {random_number} tokens."
             else:
                 instruction = f"{instruction}"
         print(instruction[-50:])
@@ -143,10 +145,10 @@ if __name__ == '__main__':
 
     # Initialize datasets
     train_datasets = [TrainDataset.DEEPSCALER]
-    train_dataset = load_dataset(train_datasets[0])
+    train_dataset = load_dataset('UWNSL/SafeChain')
     test_datasets = [TestDataset.AIME, TestDataset.AMC, TestDataset.MATH, TestDataset.MINERVA, TestDataset.OLYMPIAD_BENCH]
     
-    test_datasets_data = [load_dataset(d) for d in test_datasets]
+    test_datasets_data = load_dataset('UWNSL/SafeChain')
 
     # Process training data
     train_data: List[Dict[str, Any]] = []
@@ -176,7 +178,7 @@ if __name__ == '__main__':
     # Save training dataset
     print("train data size:", len(train_data))
     train_df = pd.DataFrame(train_data)
-    train_df.to_parquet(os.path.join(local_dir, 'train.parquet'))
+    train_df.to_parquet(os.path.join(local_dir, 'train_safety.parquet'))
 
     # Optionally copy to HDFS
     if hdfs_dir is not None:

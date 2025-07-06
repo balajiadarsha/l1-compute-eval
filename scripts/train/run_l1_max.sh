@@ -27,8 +27,8 @@ fi
 # Train over a single node, 8 A100-80GB GPUs.
 python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
-    data.train_files=$HOME/deepscaler/data7/train.parquet \
-    data.val_files=$HOME/deepscaler/data7/aime.parquet \
+    data.train_files=/lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data/train.parquet \
+    data.val_files=$HOME/lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data/aime.parquet \
     data.train_batch_size=128 \
     data.val_batch_size=512 \
     data.max_prompt_length=1024 \
