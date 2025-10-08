@@ -20,9 +20,11 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+
 # Set default model path if not provided
 if [ -z "$MODEL_PATH" ]; then
-    MODEL_PATH="agentica-org/DeepScaleR-1.5B-Preview"
+    MODEL_PATH="l3lab/L1-Qwen3-8B-Exact"
+    #MODEL_PATH="unsloth/DeepSeek-R1-Distill-Llama-8B"
 fi
 
 # Train over a single node, 8 A100-80GB GPUs.
@@ -30,23 +32,25 @@ python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
     data.train_files=/lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data/train.parquet \
     data.val_files=/lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data/aime.parquet \
-    data.train_batch_size=128 \
-    data.val_batch_size=512 \
+    data.train_batch_size=64 \
+    data.val_batch_size=256 \
     data.max_prompt_length=1024 \
     data.max_response_length=4096 \
-    actor_rollout_ref.model.path=$MODEL_PATH \
+    actor_rollout_ref.model.path="agentica-org/DeepScaleR-1.5B-Preview" \
     actor_rollout_ref.actor.optim.lr=1e-6 \
     actor_rollout_ref.model.use_remove_padding=True \
-    actor_rollout_ref.actor.ppo_mini_batch_size=64 \
+    actor_rollout_ref.actor.ppo_mini_batch_size=32 \
+    actor_rollout_ref.actor.ppo_micro_batch_size=32 \
     actor_rollout_ref.actor.use_dynamic_bsz=True \
-    actor_rollout_ref.actor.ppo_max_token_len_per_gpu=13276 \
+    #actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=2 \
+    #actor_rollout_ref.actor.log_prob_micro_batch_size_per_gpu=2 \
+    actor_rollout_ref.actor.ppo_max_token_len_per_gpu=32768 \
     actor_rollout_ref.actor.use_kl_loss=True \
     actor_rollout_ref.actor.kl_loss_coef=0.001 \
     actor_rollout_ref.actor.kl_loss_type=low_var_kl \
     actor_rollout_ref.actor.ulysses_sequence_parallel_size=1 \
-    actor_rollout_ref.model.enable_gradient_checkpointing=True \
-    actor_rollout_ref.actor.fsdp_config.param_offload=False \
-    actor_rollout_ref.actor.fsdp_config.grad_offload=False \
+    actor_rollout_ref.model.enable_gradient_checkpointing=False \
+    actor_rollout_ref.actor.fsdp_config.param_offload=True \
     actor_rollout_ref.actor.fsdp_config.optimizer_offload=False \
     actor_rollout_ref.rollout.tensor_model_parallel_size=4 \
     actor_rollout_ref.rollout.name=vllm \
@@ -61,11 +65,8 @@ python3 -m verl.trainer.main_ppo \
     trainer.logger=['console'] \
     trainer.project_name='deepscaler' \
     trainer.experiment_name='l1_exact' \
-    +trainer.val_before_train=True \
-    trainer.n_gpus_per_node=4 \
+    trainer.n_gpus_per_node=1 \
     trainer.nnodes=1 \
     trainer.save_freq=20 \
-    trainer.test_freq=20 \
     trainer.default_hdfs_dir=null \
-    trainer.total_epochs=3
-
+    trainer.total_epochs=3 \

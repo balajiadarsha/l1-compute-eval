@@ -106,7 +106,8 @@ class vLLMRollout(BaseRollout):
                                     max_model_len=config.prompt_length + config.response_length,
                                     max_num_batched_tokens=max_num_batched_tokens,
                                     enable_chunked_prefill=config.enable_chunked_prefill,
-                                    load_format=config.load_format)
+                                    load_format=config.load_format, 
+                                    swap_space=80)
         # Offload vllm model to reduce peak memory usage
         self.inference_engine.offload_model_weights()
 

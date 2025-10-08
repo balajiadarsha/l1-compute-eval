@@ -3,47 +3,14 @@ set -x
 export VLLM_ATTENTION_BACKEND=XFORMERS
 
 # Default values
-MODEL_PATH="$HOME/DeepScaleR-1.5B-Preview"
+MODEL_PATH="l3lab/L1-Qwen3-8B-Exact"  # Add default model path
+#MODEL_PATH="unsloth/DeepSeek-R1-Distill-Llama-8
 NUM_TOKENS=512  # Add default NUM_TOKENS
 MAX_TOKENS=$((NUM_TOKENS * 2))  # Set MAX_TOKENS to twice NUM_TOKENS
 #DATATYPES=("gpqa" "mmlu_1000" "lsat" "aime2025" "math" "amc" "aime" "olympiad_bench")
 DATATYPES=("mmlu_1000" "lsat" "aime2025" "gpqa" "strongreject")
 
-OUTPUT_DIR=/lus/eagle/projects/argonne_tpc/abalaji/output/response  # Add default output directory
-
-
-# Parse named arguments
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --model)
-            MODEL_PATH="$2"
-            shift 2
-            ;;
-        --num-tokens)  # Add new argument
-            NUM_TOKENS="$2"
-            MAX_TOKENS=$((NUM_TOKENS * 2))
-            shift 2
-            ;;
-        --datasets)
-            # Convert space-separated arguments into array
-            shift
-            DATATYPES=()
-            while [[ $# -gt 0 && ! $1 =~ ^-- ]]; do
-                DATATYPES+=("$1")
-                shift
-            done
-            ;;
-        --output-dir)
-            OUTPUT_DIR="$2"
-            shift 2
-            ;;
-        *)
-            echo "Unknown argument: $1"
-            echo "Usage: $0 --model <model_path> --num-tokens <num_tokens> --datasets dataset1 dataset2 ... --output-dir <output_directory>"
-            exit 1
-            ;;
-    esac
-done
+OUTPUT_DIR=/lus/eagle/projects/argonne_tpc/abalaji/output/response  # Add default output director
 
 # Echo the values for verification
 echo "Model Path: ${MODEL_PATH}"
@@ -60,7 +27,7 @@ for DATA_TYPE in "${DATATYPES[@]}"; do
         trainer.nnodes=1 \
         trainer.n_gpus_per_node=1 \
         data.path=/lus/eagle/projects/argonne_tpc/abalaji/datasets/deepscaler/data_${NUM_TOKENS}/${DATA_TYPE}.parquet \
-        data.output_path=${OUTPUT_DIR}_${NUM_TOKENS}/${DATA_TYPE}\
+        data.output_path=${OUTPUT_DIR}_${NUM_TOKENS}/${DATA_TYPE} \
         data.n_samples=16 \
         data.batch_size=2048 \
         model.path=${MODEL_PATH} \
@@ -71,4 +38,3 @@ for DATA_TYPE in "${DATATYPES[@]}"; do
         rollout.gpu_memory_utilization=0.9 \
         rollout.tensor_model_parallel_size=1
 done
-
